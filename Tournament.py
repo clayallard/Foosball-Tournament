@@ -29,6 +29,7 @@ class Tournament:
     __cycle__=1
     __print__=False
     __teams__=None
+    __updated__=False
 
     class Match:
         scores=[None, None]
@@ -187,16 +188,22 @@ class Tournament:
             if not m.played: return False
         return True
 
+    def update_ranks(self):
+        if self.__updated__ or self.__round_num__ == 0:
+            return
+        for m in self.__rounds__[self.__round_num__-1]:
+            self.__game_result__(m)
+        self.__updated__=True
+
     def new_round(self):
         if not self.__round_complete__():
             return
-        if self.__round_num__ > 0:
-            for m in self.__rounds__[self.__round_num__-1]:
-                self.__game_result__(m)
+        self.update_ranks()
         if self.__round_num__%3==0:
             self.__played_singles__=set()
             random.shuffle(self.__round_format__)
         self.__matchup_list__()
+        self.__updated__=False
         self.__round_num__+=1
 
     def round_number(self):

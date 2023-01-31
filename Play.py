@@ -112,23 +112,23 @@ def round_setup():
             my_entries.append(my_entry)
 
     if t.round_number() == rounds:
-        my_button = Button(second_frame, text="Finish", command=finished, height=1, width=10)
+        my_button = Button(second_frame, text="Finish", command=update_scores, height=1, width=10)
     else:
         my_button = Button(second_frame, text="Next Round", command=update_scores, height=1, width=10)
     my_button.grid(row=1, column=3, padx=20)
     return main_frame
 
-def finished():
-    if t.round_number() == rounds:
-        root.destroy()
-    teams = t.teams()
-    seeding = 0
-    st=""
-    for team in teams:
-        seeding+=1
-        st += str(seeding) + " " + naming(team) + "\n"
-    print(st)
-    print(t.rankings(True))
+# def finished():
+#     if t.round_number() == rounds:
+#         root.destroy()
+#     teams = t.teams()
+#     seeding = 0
+#     st=""
+#     for team in teams:
+#         seeding+=1
+#         st += str(seeding) + " " + naming(team) + "\n"
+#     print(st)
+#     print(t.rankings(True))
 
 def update_scores():
     global scores
@@ -151,11 +151,19 @@ def update_scores():
     round_matches = t.matchups()
     for s in range(len(round_matches)):
         round_matches[s].set_scores(scores[s][0], scores[s][1])
-    if t.round_number() == rounds:
+    t.new_round()
+    if t.round_number() > rounds:
         root.destroy()
+        teams = t.teams()
+        seeding = 0
+        st=""
+        for team in teams:
+            seeding+=1
+            st += str(seeding) + " " + naming(team) + "\n"
+        print(st)
+        print(t.rankings(True))
         return
     main_frame.destroy()
-    t.new_round()
     round_setup()
     root.title("Foosball Tournament (Round " + str(t.round_number()) + ")")
     scores=[["",""] for i in range(len(t.matchups()))]

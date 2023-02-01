@@ -96,7 +96,8 @@ class Tournament:
         if type(match.teams[0]) == str: match.teams[0] = [match.teams[0]]
         if type(match.teams[1]) == str: match.teams[1] = [match.teams[1]]
         # half points for doubles
-        score_adjustment = float(math.pow(max(match.scores)/3,1/2))
+        max_score=max(abs(match.scores[0]),abs(match.scores[1]))
+        score_adjustment = float(math.pow(max_score/3,1/2)) if max_score!=0 else 1
         score1 = float(match.scores[0]) / len(match.teams[0]) / score_adjustment
         score2 = float(match.scores[1]) / len(match.teams[1]) / score_adjustment
         # bonus for winning

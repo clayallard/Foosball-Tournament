@@ -111,48 +111,24 @@ def round_setup():
             my_entry.grid(row=2 * x + 1, column=2 * y, sticky='ns', pady=(0, 10))
             my_entries.append(my_entry)
 
-    if t.round_number() == rounds:
-        my_button = Button(second_frame, text="Finish", command=update_scores, height=1, width=10)
+    if t.round_number() >= rounds:
+        my_button_done = Button(second_frame, text="Finish", command=finished, height=1, width=10)
+        my_button = Button(second_frame, text="Next Round", command=add_round, height=1, width=10)
+        my_button_done.grid(row=1, column=4, padx=5)
     else:
         my_button = Button(second_frame, text="Next Round", command=update_scores, height=1, width=10)
-    my_button.grid(row=1, column=3, padx=20)
+    my_button.grid(row=1, column=3, padx=5)
     return main_frame
 
-# def finished():
-#     if t.round_number() == rounds:
-#         root.destroy()
-#     teams = t.teams()
-#     seeding = 0
-#     st=""
-#     for team in teams:
-#         seeding+=1
-#         st += str(seeding) + " " + naming(team) + "\n"
-#     print(st)
-#     print(t.rankings(True))
+def add_round():
+    global rounds
+    rounds+=1
+    update_scores()
 
-def update_scores():
-    global scores
-    # clear_output(wait=True)
-    for i in range(int(len(my_entries) / 2)):
-        val1 = my_entries[2 * i].get()
-        val2 = my_entries[2 * i + 1].get()
-        scores[i] = [int(val1) if val1.isnumeric() else "", int(val2) if val2.isnumeric() else ""]
-    if not all_numeric(scores):
-        top = Toplevel(root)
-        top.geometry("500x75")
-        top.title("Child Window")
-        Label(top, text="Cannot continue to the next round until all scores are reported!", font=(18)).place(x=25, y=25)
-        return
-    # getting data from GUI
-    # val1=3 if random.randint(0,1)==0 else random.randint(0,2)
-    # val2=3 if val1!=3 else random.randint(0,2)
-    # scores[i]=[val1,val2]
-    # if pr: print("Singles (" + str(curr_round+1)+") "+str(played_singles))
-    round_matches = t.matchups()
-    for s in range(len(round_matches)):
-        round_matches[s].set_scores(scores[s][0], scores[s][1])
-    t.new_round()
-    if t.round_number() > rounds:
+def finished():
+    message="Cannot finish until all scores are reported!"
+    if get_scores(my_entries,message):
+        t.update_ranks()
         root.destroy()
         teams = t.teams()
         seeding = 0
@@ -161,9 +137,43 @@ def update_scores():
             seeding+=1
             st += str(seeding) + " " + naming(team) + "\n"
         print(st)
-        print(t.rankings(True))
+        # print(t.rankings(True))
+
+def get_scores(entries,message):
+    for i in range(int(len(entries) / 2)):
+        val1 = entries[2 * i].get()
+        val2 = entries[2 * i + 1].get()
+        scores[i] = [int(val1) if val1.isnumeric() else "", int(val2) if val2.isnumeric() else ""]
+    if not all_numeric(scores):
+        top = Toplevel(root)
+        top.geometry(str(len(message)*8) + "x75")
+        top.title("Child Window")
+        Label(top, text=message, font=(18)).place(x=25, y=25)
+        return False
+    round_matches = t.matchups()
+    for s in range(len(round_matches)):
+        round_matches[s].set_scores(scores[s][0], scores[s][1])
+    return True
+
+def update_scores():
+    global scores
+    # clear_output(wait=True)
+    message = "Cannot continue to the next round until all scores are reported!"
+    if not get_scores(my_entries,message):
         return
+    # getting data from GUI
+    # val1=3 if random.randint(0,1)==0 else random.randint(0,2)
+    # val2=3 if val1!=3 else random.randint(0,2)
+    # scores[i]=[val1,val2]
+    # if pr: print("Singles (" + str(curr_round+1)+") "+str(played_singles))
+    # round_matches = t.matchups()
+    # for s in range(len(round_matches)):
+    #     round_matches[s].set_scores(scores[s][0], scores[s][1])
+    # if t.round_number() == rounds:
+    #     root.destroy()
+    #     return
     main_frame.destroy()
+    t.new_round()
     round_setup()
     root.title("Foosball Tournament (Round " + str(t.round_number()) + ")")
     scores=[["",""] for i in range(len(t.matchups()))]

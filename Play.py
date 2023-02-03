@@ -47,7 +47,7 @@ def main():
     t = Tournament(players)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", "--rounds", default=max(math.floor(30/(len(players)/3)),3), type=int,
+    parser.add_argument("-r", "--rounds", default=1, type=int,
                         help="the amount of rounds to play.")
     args = parser.parse_args()
     # rounds=max(math.floor(30/(len(players)/3)),3)
@@ -56,15 +56,15 @@ def main():
     t.new_round()
     scores = [["", ""] for i in range(len(t.matchups()))]
     # update_scores()
-    if t.round_number() > rounds:
-        print(
-            "The tournament is over as the amount of rounds set have been played. To play more rounds, edit the round count in the code.")
-        print("Teams: " + str(t.teams()))
-    else:
-        main_frame = round_setup()
-        root.bind('<Return>', lambda event: update_scores())
-        root.protocol("WM_DELETE_WINDOW", on_closing)
-        root.mainloop()
+    # if t.round_number() > rounds:
+    #     print(
+    #         "The tournament is over as the amount of rounds set have been played. To play more rounds, edit the round count in the code.")
+    #     print("Teams: " + str(t.teams()))
+    # else:
+    main_frame = round_setup()
+    root.bind('<Return>', lambda event: update_scores())
+    root.protocol("WM_DELETE_WINDOW", on_closing)
+    root.mainloop()
 
 def naming(team):
     if type(team)!= list:
@@ -127,29 +127,30 @@ def add_round():
     rounds+=1
     update_scores()
 
-def final_results():
+def final_results(as_dict=False):
     teams = t.teams()
     seeding = 0
     st = ""
     for team in teams:
         seeding += 1
         st += str(seeding) + " " + naming(team) + "\n"
-    return st, t.rankings(False)
+    return st, t.rankings(as_dict)
+
+def print_standings():
+    teams, indiv = final_results(False)
+    print(teams)
+    print(indiv)
 
 def on_closing():
     root.destroy()
-    teams, indiv = final_results()
-    print(teams)
-    print(indiv)
+    print_standings()
 
 def finished():
     message="Cannot finish until all scores are reported!"
     if get_scores(my_entries,message):
         t.update_ranks()
         root.destroy()
-        teams, indiv = final_results()
-        print(teams)
-        print(indiv)
+    print_standings()
 
 def get_scores(entries,message):
     for i in range(int(len(entries) / 2)):

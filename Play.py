@@ -27,6 +27,7 @@ root = Tk()
 root.title("Foosball Tournament (Round " + str(1) + ")")
 root.geometry("1280x720")
 
+
 my_entries = []
 
 # with open('Participants.txt') as f:
@@ -62,6 +63,7 @@ def main():
     else:
         main_frame = round_setup()
         root.bind('<Return>', lambda event: update_scores())
+        root.protocol("WM_DELETE_WINDOW", on_closing)
         root.mainloop()
 
 def naming(team):
@@ -125,19 +127,29 @@ def add_round():
     rounds+=1
     update_scores()
 
+def final_results():
+    teams = t.teams()
+    seeding = 0
+    st = ""
+    for team in teams:
+        seeding += 1
+        st += str(seeding) + " " + naming(team) + "\n"
+    return st, t.rankings(False)
+
+def on_closing():
+    root.destroy()
+    teams, indiv = final_results()
+    print(teams)
+    print(indiv)
+
 def finished():
     message="Cannot finish until all scores are reported!"
     if get_scores(my_entries,message):
         t.update_ranks()
         root.destroy()
-        teams = t.teams()
-        seeding = 0
-        st=""
-        for team in teams:
-            seeding+=1
-            st += str(seeding) + " " + naming(team) + "\n"
-        print(st)
-        # print(t.rankings(True))
+        teams, indiv = final_results()
+        print(teams)
+        print(indiv)
 
 def get_scores(entries,message):
     for i in range(int(len(entries) / 2)):

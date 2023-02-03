@@ -1,5 +1,7 @@
 # Foosball-Tournament
 
+This is a foosball tournament generator that creates a series of singles and doubles matches. Each round, players will be matched up based on the results of previous matches to make the fairest and most informative matchups possible. Every 3 rounds, each player is guaranteed to play 2 doubles matches, and 1 singles match. Once the tournament is over, players will be put onto teams according to the results. From here, we can start a bracket and crown a doubles champion. This could also be used to make seeding for a singles bracket. 
+
 ## Instructions
 
 In order to run this program, all that is needed are the **Tournament.py**, **Play.py**, and **Participants.txt** files. Specify the participants competing in **Participants.txt**. Each participant is separated by line. There can only be an even number of players. Then, run **Play.py**. This requires having Python installed. This can be run through either an IDE such as PyCharm, or from the command line prompt (preferable option). Navigate to the directory that these files exist in and type

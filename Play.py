@@ -150,7 +150,7 @@ def finished():
     if get_scores(my_entries,message):
         t.update_ranks()
         root.destroy()
-    print_standings()
+        print_standings()
 
 def get_scores(entries,message):
     for i in range(int(len(entries) / 2)):
